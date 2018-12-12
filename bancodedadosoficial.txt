@@ -1,0 +1,83 @@
+CREATE TABLE `admin` (
+  `idadmin` int(11) NOT NULL AUTO_INCREMENT,
+  `login` varchar(45) NOT NULL,
+  `senha` varchar(45) NOT NULL,
+  PRIMARY KEY (`idadmin`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `usuario` (
+  `idusuario` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `login` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `senha` varchar(100) NOT NULL,
+  PRIMARY KEY (`idusuario`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `rodada` (
+  `idrodada` int(11) NOT NULL AUTO_INCREMENT,
+  `rodada` varchar(45) NOT NULL,
+  `estado` int(11) NOT NULL,
+  PRIMARY KEY (`idrodada`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `timenome` (
+  `idtimenome` int(11) NOT NULL AUTO_INCREMENT,
+  `timenome` varchar(45) NOT NULL,
+  `rodada_idrodada` int(11) NOT NULL,
+  `posicao` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idtimenome`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `partida` (
+  `idpartida` int(11) NOT NULL AUTO_INCREMENT,
+  `rodada_idrodada` int(11) NOT NULL,
+  PRIMARY KEY (`idpartida`),
+  KEY `fk_partida_rodada1_idx` (`rodada_idrodada`),
+  CONSTRAINT `fk_partida_rodada1` FOREIGN KEY (`rodada_idrodada`) REFERENCES `rodada` (`idrodada`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `partida_time` (
+  `partida_idpartida` int(11) NOT NULL,
+  `timenome_idtimenome` int(11) NOT NULL,
+  `gols` int(11) DEFAULT NULL,
+  `pontos` int(11) DEFAULT NULL,
+  `rodada_idrodada` int(11) NOT NULL,
+  PRIMARY KEY (`partida_idpartida`,`timenome_idtimenome`),
+  KEY `fk_partida_has_time_time1_idx` (`timenome_idtimenome`),
+  KEY `fk_partida_has_time_partida1_idx` (`partida_idpartida`),
+  CONSTRAINT `fk_partida_has_time_partida1` FOREIGN KEY (`partida_idpartida`) REFERENCES `partida` (`idpartida`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_partida_has_time_time1` FOREIGN KEY (`timenome_idtimenome`) REFERENCES `timenome` (`idtimenome`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+CREATE TABLE `palpite` (
+  `idpalpite` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_idusuario` int(11) NOT NULL,
+  `partida_time_partida_idpartida` int(11) NOT NULL,
+  `partida_time_time_idtime` int(11) NOT NULL,
+  `palpite` int(11) NOT NULL,
+  `palpiteponto` int(11) DEFAULT NULL,
+  `palpitepontorel` int(11) DEFAULT NULL,
+  `rodada_idrodada` int(11) NOT NULL,
+  PRIMARY KEY (`idpalpite`,`usuario_idusuario`,`partida_time_partida_idpartida`,`partida_time_time_idtime`),
+  KEY `fk_palpite_usuario1_idx` (`usuario_idusuario`),
+  KEY `fk_palpite_partida_time1_idx` (`partida_time_partida_idpartida`,`partida_time_time_idtime`),
+  CONSTRAINT `fk_palpite_partida_time1` FOREIGN KEY (`partida_time_partida_idpartida`, `partida_time_time_idtime`) REFERENCES `partida_time` (`partida_idpartida`, `timenome_idtimenome`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_palpite_usuario1` FOREIGN KEY (`usuario_idusuario`) REFERENCES `usuario` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=latin1;
+
+CREATE TABLE `palpite_posicao` (
+  `idpalpite_posicao` int(11) NOT NULL AUTO_INCREMENT,
+  `timenome_idtimenome` int(11) NOT NULL,
+  `usuario_idusuario` int(11) NOT NULL,
+  `palpite_posicao` int(11) DEFAULT NULL,
+  `rodada_idrodada` int(11) NOT NULL,
+  `estado` int(11) DEFAULT NULL,
+  PRIMARY KEY (`idpalpite_posicao`,`timenome_idtimenome`,`usuario_idusuario`),
+  KEY `fk_palpite_posicao_timenome1_idx` (`timenome_idtimenome`),
+  KEY `fk_palpite_posicao_usuario1_idx` (`usuario_idusuario`),
+  KEY `fk_palpite_posicao_rodada2_idx` (`rodada_idrodada`),
+  CONSTRAINT `fk_palpite_posicao_rodada2` FOREIGN KEY (`rodada_idrodada`) REFERENCES `rodada` (`idrodada`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_palpite_posicao_timenome1` FOREIGN KEY (`timenome_idtimenome`) REFERENCES `timenome` (`idtimenome`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_palpite_posicao_usuario1` FOREIGN KEY (`usuario_idusuario`) REFERENCES `usuario` (`idusuario`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1;
